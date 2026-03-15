@@ -1,0 +1,118 @@
+:root {
+  --accent:        #3D4F1C;   /* Olive green — CTA buttons */
+  --accent-hover:  #4D6224;   /* Button hover */
+  --accent-tint:   #EAF0D8;   /* Badge / tag fill */
+  --accent-border: #D4E0B0;   /* Badge / tag border */
+  --dark:          #1C1C1A;   /* Navbar background */
+  --text-h:        #0F0F0D;   /* All headings */
+  --text-body:     #4A4A48;   /* Body paragraphs */
+  --text-muted:    #7A7A78;   /* Subtext, descriptions */
+  --text-hint:     #AFAFAD;   /* Captions, micro labels */
+  --bg:            #FFFFFF;   /* Page background */
+  --bg-section:    #F5F5F3;   /* Alternate section bg */
+  --bg-card:       #EFEFED;   /* Card / pill background */
+  --border:        #E4E4E2;   /* Default border */
+  --border-hover:  #D4D4D2;   /* Hover border */
+  --border-strong: #C4C4C2;   /* Emphasized border */
+  --radius:        9px;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-body);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.max-w-custom {
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-padding {
+  padding: 72px 24px;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+}
+
+.btn-secondary {
+  background-color: #fff;
+  color: var(--text-h);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: border-color 0.2s;
+}
+.btn-secondary:hover {
+  border-color: var(--border-hover);
+}
+
+.pill {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.accent-badge {
+  background-color: var(--accent-tint);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.card-custom {
+  background-color: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.section-alt {
+  background-color: var(--bg-section);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
