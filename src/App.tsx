@@ -28,41 +28,50 @@ const TOKENS = {
 } as const;
 
 const SectionWrapper = ({ children, className = "", style = {}, isAlt = false }: { children: React.ReactNode, className?: string, style?: React.CSSProperties, isAlt?: boolean }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
-
   return (
-    <section
-      ref={ref}
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className={`${isAlt ? "section-alt" : ""} ${className}`}
       style={{
         padding: "72px 24px",
-        opacity: isInView ? 1 : 0,
-        transform: isInView ? "translateY(0)" : "translateY(16px)",
-        transition: "opacity 0.5s ease-out, transform 0.5s ease-out",
         ...style
       }}
     >
       <div className="max-w-custom">
         {children}
       </div>
-    </section>
+    </motion.section>
   );
 };
 
 // Variants
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.1
+    }
+  }
+} as any;
+
 const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as any } }
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
 } as any;
 
 const cardVariants = {
-  hidden: { opacity: 0, scale: 0.88 },
-  show: (i: number) => ({
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  show: {
     opacity: 1,
+    y: 0,
     scale: 1,
-    transition: { delay: i * 0.07, duration: 0.45, ease: [0.22, 1, 0.36, 1] as any }
-  })
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+  }
 } as any;
 
 // Icons
@@ -295,39 +304,39 @@ const Navbar = ({ isDark, toggleDark }: { isDark: boolean, toggleDark: () => voi
       alignItems: "center",
       padding: "0 16px",
       height: 48,
-      borderBottom: `1px solid ${TOKENS.border}`,
-      backgroundColor: scrolled ? TOKENS.bgCard : "transparent",
-      backdropFilter: scrolled ? "blur(12px)" : "none",
+      borderBottom: scrolled ? "1px solid rgba(229,229,229,0.6)" : "1px solid transparent",
+      backgroundColor: "rgba(255,255,255,0.85)",
+      backdropFilter: "blur(12px)",
       transition: "all 0.3s ease"
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <GridIcon />
-        <span style={{ fontSize: 14, fontWeight: 700, color: TOKENS.textPrimary }}>Arogya Saarthi</span>
+        <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>Arogya Saarthi</span>
       </div>
       
       <div onClick={toggleDark} style={{
-        width: 40, height: 22, backgroundColor: TOKENS.textPrimary, borderRadius: 100,
+        width: 40, height: 22, backgroundColor: "#111", borderRadius: 100,
         position: "relative", cursor: "pointer", display: "flex", alignItems: "center",
         padding: "0 2px", justifyContent: isDark ? "flex-end" : "flex-start"
       }}>
         <motion.div layout transition={{ type: "spring", stiffness: 700, damping: 30 }} style={{
-          width: 18, height: 18, backgroundColor: TOKENS.bgMain, borderRadius: "50%"
+          width: 18, height: 18, backgroundColor: "white", borderRadius: "50%"
         }} />
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 11, color: TOKENS.textMuted }}>New York, USA 3:47 PM</span>
+        <span style={{ fontSize: 12, color: "#666" }}>New York, USA 3:47 PM</span>
         <motion.button whileHover={{ scale: 1.04, color: TOKENS.accent }} whileTap={{ scale: 0.96 }} style={{
-          width: 28, height: 28, borderRadius: "50%", border: `1px solid ${TOKENS.border}`,
-          display: "flex", alignItems: "center", justifyContent: "center", background: TOKENS.bgCard, cursor: "pointer",
-          color: TOKENS.textPrimary
+          width: 28, height: 28, borderRadius: "50%", border: `1px solid rgba(229,229,229,0.7)`,
+          display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.85)", cursor: "pointer",
+          color: "#555"
         }}>
           <QuestionIcon />
         </motion.button>
         <motion.button whileHover={{ scale: 1.04, color: TOKENS.accent }} whileTap={{ scale: 0.96 }} style={{
-          width: 28, height: 28, borderRadius: "50%", border: `1px solid ${TOKENS.border}`,
-          display: "flex", alignItems: "center", justifyContent: "center", background: TOKENS.bgCard, cursor: "pointer",
-          color: TOKENS.textPrimary
+          width: 28, height: 28, borderRadius: "50%", border: `1px solid rgba(229,229,229,0.7)`,
+          display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.85)", cursor: "pointer",
+          color: "#555"
         }}>
           <HamburgerIcon />
         </motion.button>
@@ -341,7 +350,7 @@ const HeroWrapper = ({ children }: { children: React.ReactNode }) => {
     <div style={{ 
       position: "relative", 
       width: "100%", 
-      background: TOKENS.heroGradient,
+      background: "linear-gradient(135deg, #f0f4ec 0%, #e8f0da 30%, #f5f8f0 60%, #edf2e6 100%)",
       overflow: "hidden"
     }}>
       {children}
@@ -351,158 +360,135 @@ const HeroWrapper = ({ children }: { children: React.ReactNode }) => {
 
 const Hero = () => {
   return (
-    <div style={{ position: "relative", width: "100%", height: 420, overflow: "hidden" }}>
-      {/* Background with Ken Burns Effect */}
-      <motion.div 
-        initial={{ scale: 1.04 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 1.4, ease: "easeOut" }}
-        style={{ position: "absolute", inset: 0, zIndex: 0 }}
-      >
-        <video
-          autoPlay
-          loop
-          muted
+    <section className="hero" style={{ 
+      position: "relative", 
+      width: "100%", 
+      height: "100vh", 
+      overflow: "hidden",
+      paddingLeft: "60px"
+    }}>
+      {/* Background Layer (Layer 1) */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
+        <video 
+          autoPlay 
+          muted 
+          loop 
           playsInline
           style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            opacity: 0.85
+            position: "absolute", top: "50%", left: "50%",
+            transform: "translate(-50%,-50%)",
+            minWidth: "100%", minHeight: "100%",
+            width: "auto", height: "auto",
+            objectFit: "cover"
           }}
           src="https://assets.mixkit.co/videos/preview/mixkit-medical-laboratory-with-blue-light-40158-large.mp4"
         />
-        {/* Subtle gradient to ensure text readability if needed, but keeping it light as requested */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          background: "linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)",
-          zIndex: 1
-        }} />
-      </motion.div>
-
-      {/* Left side icon bar */}
-      <Sidebar />
-
-      {/* Innovative health solutions card */}
-      <motion.div
-        initial={{ opacity: 0, x: -30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
-        style={{
-          position: "absolute", left: 20, bottom: 30, background: TOKENS.bgCard, borderRadius: 10,
-          padding: "10px 14px", boxShadow: TOKENS.shadow, zIndex: 10,
-          display: "flex", flexDirection: "column", gap: 4
-        }}
-      >
-        <div style={{ position: "absolute", top: 6, left: 6, color: TOKENS.textMuted, fontSize: 10 }}>
-          <SettingsIcon />
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-          <strong style={{ fontSize: 12, fontWeight: 700, color: TOKENS.textPrimary }}>Innovative</strong>
-          <span style={{ fontSize: 11, color: TOKENS.textMuted }}>health solutions</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 2 }}>
-          <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-            style={{ color: TOKENS.accent, fontSize: 12, display: "flex" }}
-          >
-            <PlusIcon />
-          </motion.div>
-          <motion.div 
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            style={{ width: 4, height: 4, borderRadius: "50%", backgroundColor: TOKENS.accentSage }} 
-          />
-        </div>
-      </motion.div>
-
-      {/* Our Mission floating pill */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6, duration: 0.5 }}
-        style={{
-          position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)",
-          display: "flex", flexDirection: "column", alignItems: "center", gap: 6, zIndex: 10
-        }}
-      >
-        <div style={{
-          width: 40, height: 40, borderRadius: "50%", backgroundColor: TOKENS.peach,
-          position: "relative", border: `2px solid ${TOKENS.bgMain}`, boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-        }}>
-          <div style={{
-            position: "absolute", top: -2, right: -2, width: 14, height: 14, background: TOKENS.bgMain,
-            borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-          }}>
-            <ArrowUpRightIcon />
-          </div>
-        </div>
-        <div style={{ fontSize: 11, color: TOKENS.textMuted, fontWeight: 500 }}>Our Mission</div>
-      </motion.div>
-
-      {/* Right side floating cards */}
-      <div style={{ position: "absolute", right: 24, top: 10, display: "flex", flexDirection: "column", gap: 12, zIndex: 10 }}>
-        <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-        >
-          <motion.div 
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            style={{
-              width: 200, background: TOKENS.bgCard, borderRadius: 12, padding: 16, boxShadow: TOKENS.shadow,
-              display: "flex", flexDirection: "column", gap: 8
-            }}
-          >
-            <div style={{ fontSize: 13, fontWeight: 700, color: TOKENS.textPrimary }}>Collaborate With Us</div>
-            <div style={{ fontSize: 11, color: TOKENS.textMuted, lineHeight: 1.4 }}>
-              Join our network of healthcare providers and emergency response units.
-            </div>
-            <motion.button 
-              whileHover={{ scale: 1.02, backgroundColor: TOKENS.accentHover }} whileTap={{ scale: 0.98 }}
-              style={{
-                width: "100%", background: TOKENS.accent, color: "white", border: "none",
-                borderRadius: 8, padding: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif"
-              }}
-            >
-              Contact Us
-            </motion.button>
-          </motion.div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
-        >
-          <motion.div 
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-            style={{
-              width: 200, background: TOKENS.bgCard, borderRadius: 12, padding: 16, boxShadow: TOKENS.shadow,
-              display: "flex", flexDirection: "column", gap: 8
-            }}
-          >
-            <div style={{ fontSize: 13, fontWeight: 700, color: TOKENS.textPrimary }}>Stay Updated</div>
-            <div style={{ fontSize: 11, color: TOKENS.textMuted, lineHeight: 1.4 }}>
-              Get the latest insights on healthcare technology and system innovations.
-            </div>
-            <motion.button 
-              whileHover={{ scale: 1.02, backgroundColor: TOKENS.accentHover }} whileTap={{ scale: 0.98 }}
-              style={{
-                width: "100%", background: TOKENS.accent, color: "white", border: "none",
-                borderRadius: 8, padding: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif"
-              }}
-            >
-              Subscribe
-            </motion.button>
-          </motion.div>
-        </motion.div>
+        <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.45)" }}></div>
       </div>
-    </div>
+
+      <div style={{ 
+        position: "relative", 
+        zIndex: 1, 
+        width: "100%", 
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center"
+      }}>
+        {/* Left side icon bar */}
+        <Sidebar />
+
+        {/* Innovative health solutions card - centered now */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
+          style={{
+            background: "rgba(255,255,255,0.92)", borderRadius: 12,
+            padding: "8px 16px", border: "1px solid rgba(229,229,229,0.7)", backdropFilter: "blur(12px)",
+            display: "flex", alignItems: "center", gap: 10, marginBottom: 20
+          }}
+        >
+          <div style={{ color: "#888", display: "flex" }}>
+            <SettingsIcon />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <strong style={{ fontSize: 13, fontWeight: 600, color: "#111" }}>Innovative</strong>
+            <span style={{ fontSize: 12, color: "#666" }}>health solutions</span>
+          </div>
+        </motion.div>
+
+
+
+        {/* Right side floating cards */}
+        <div style={{ position: "absolute", right: 24, top: 80, display: "flex", flexDirection: "column", gap: 16, zIndex: 10 }}>
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+          >
+            <motion.div 
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              style={{
+                width: 220, background: "rgba(255,255,255,0.95)", borderRadius: 14, padding: 18, 
+                border: "1px solid rgba(229,229,229,0.8)", backdropFilter: "blur(16px)",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.07)", display: "flex", flexDirection: "column", gap: 8
+              }}
+            >
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Collaborate With Us</div>
+              <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>
+                Join our network of healthcare providers and emergency response units.
+              </div>
+              <motion.button 
+                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                style={{
+                  width: "100%", background: "#4A5E2A", color: "white", border: "none",
+                  borderRadius: 8, padding: 10, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif"
+                }}
+              >
+                Contact Us
+              </motion.button>
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+          >
+            <motion.div 
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              style={{
+                width: 220, background: "rgba(255,255,255,0.95)", borderRadius: 14, padding: 18, 
+                border: "1px solid rgba(229,229,229,0.8)", backdropFilter: "blur(16px)",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.07)", display: "flex", flexDirection: "column", gap: 8
+              }}
+            >
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Stay Updated</div>
+              <div style={{ fontSize: 12, color: "#666", lineHeight: 1.5 }}>
+                Get the latest insights on healthcare technology and system innovations.
+              </div>
+              <motion.button 
+                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                style={{
+                  width: "100%", background: "#4A5E2A", color: "white", border: "none",
+                  borderRadius: 8, padding: 10, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans', sans-serif"
+                }}
+              >
+                Subscribe
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Hero Content Section */}
+        <Headline />
+      </div>
+    </section>
   );
 };
 
@@ -511,23 +497,33 @@ const Sidebar = () => {
   
   return (
     <motion.div 
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.5, duration: 0.6 }}
-      style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 0, zIndex: 20 }}
+      variants={staggerContainer}
+      initial="hidden"
+      animate="show"
+      style={{ 
+        position: "fixed", 
+        left: 16, 
+        top: "50%", 
+        transform: "translateY(-50%)", 
+        display: "flex", 
+        flexDirection: "column", 
+        gap: 8, 
+        zIndex: 100 
+      }}
     >
       {icons.map((Icon, index) => (
         <motion.div
           key={index}
+          variants={fadeUp}
           whileHover={{ x: 3, scale: 1.05, color: TOKENS.accent }}
           whileTap={{ scale: 0.95 }}
           style={{
-            width: 32, height: 32, borderRadius: "50%",
-            border: `1px solid ${TOKENS.border}`,
-            background: TOKENS.bgMain,
-            color: TOKENS.textPrimary,
+            width: 36, height: 36, borderRadius: "50%",
+            border: `1px solid rgba(229,229,229,0.7)`,
+            background: "rgba(255,255,255,0.85)",
+            backdropFilter: "blur(8px)",
+            color: "#555",
             display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-            margin: "4px 8px",
             transition: "all 0.2s ease"
           }}
         >
@@ -535,14 +531,15 @@ const Sidebar = () => {
         </motion.div>
       ))}
       <motion.div
+        variants={fadeUp}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         style={{
-          width: 24, height: 24, borderRadius: "50%",
-          background: TOKENS.textPrimary,
-          color: TOKENS.bgMain,
+          width: 36, height: 36, borderRadius: "50%",
+          background: "rgba(40,40,40,0.75)",
+          color: "white",
           display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-          margin: "4px 12px"
+          marginTop: 8
         }}
       >
         <CloseIcon />
@@ -556,22 +553,34 @@ const Headline = () => {
   const words = headlineText.split(" ");
 
   return (
-    <div style={{ padding: "40px 24px 48px", maxWidth: 820, margin: "0 auto", backgroundColor: TOKENS.bgMain }}>
+    <motion.div 
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      style={{ 
+        margin: "0 auto", 
+        maxWidth: "680px", 
+        textAlign: "center",
+        width: "100%",
+        backgroundColor: "transparent",
+        padding: "0 24px"
+      }}
+    >
       <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 12 }}>
-        <div style={{ color: TOKENS.textMuted, fontSize: 16, marginTop: 4 }}><PlusCircleIcon /></div>
-        <h1 style={{ fontSize: 42, fontWeight: 700, lineHeight: 1.2, color: TOKENS.textPrimary, margin: 0 }}>
+        <div style={{ color: "#888", fontSize: 16, marginTop: 4 }}><PlusCircleIcon /></div>
+        <h1 style={{ fontSize: 38, fontWeight: 700, lineHeight: 1.2, color: "#111111", margin: 0 }}>
           {words.map((word, i) => (
             <motion.span
               key={i}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + i * 0.06, duration: 0.4 }}
+              transition={{ delay: 0.1 + i * 0.05, duration: 0.4 }}
               style={{ display: "inline-block", marginRight: "0.25em" }}
             >
               {word}
             </motion.span>
           ))}
-          <span style={{ display: "inline-flex", gap: 4, verticalAlign: "middle", marginLeft: 6, color: TOKENS.textMuted, fontSize: 18 }}>
+          <span style={{ display: "inline-flex", gap: 4, verticalAlign: "middle", marginLeft: 6, color: "#888", fontSize: 18 }}>
             <div style={{ width: 10, height: 10, borderRadius: "50%", border: "1.5px solid currentColor" }} />
             <div style={{ width: 10, height: 10, borderRadius: "50%", border: "1.5px solid currentColor" }} />
           </span>
@@ -581,20 +590,17 @@ const Headline = () => {
       <motion.p 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.6, duration: 0.8 }}
-        style={{ fontSize: 15, color: TOKENS.textMuted, lineHeight: 1.65, maxWidth: 620, marginTop: 16 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
+        style={{ fontSize: 15, color: "#555555", lineHeight: 1.65, maxWidth: 620, marginTop: 16 }}
       >
         Across cities and healthcare networks, critical information about ICU beds, doctors, ambulances, and medical equipment remains fragmented. Arogya Saarthii brings these resources into a unified real-time system.
       </motion.p>
 
-      <div style={{ display: "flex", gap: 12, marginTop: 28, alignItems: "center" }}>
+      <div style={{ display: "flex", gap: 12, marginTop: 28, alignItems: "center", justifyContent: "center" }}>
         <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.5 }}
-          whileHover={{ scale: 1.04, backgroundColor: TOKENS.accentHover }} whileTap={{ scale: 0.96 }}
+          whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
           style={{
-            background: TOKENS.accent, color: "white", border: "none", borderRadius: 24,
+            background: "#4A5E2A", color: "white", border: "none", borderRadius: 24,
             padding: "12px 24px", fontSize: 14, fontWeight: 500, display: "flex", alignItems: "center", gap: 8,
             cursor: "pointer", fontFamily: "'DM Sans', sans-serif"
           }}
@@ -603,13 +609,11 @@ const Headline = () => {
           <ArrowUpRightIcon />
         </motion.button>
         <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
-          whileHover={{ scale: 1.04, backgroundColor: TOKENS.bgSection }} whileTap={{ scale: 0.96 }}
+          whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
           style={{
-            background: "transparent", color: TOKENS.textPrimary, border: `1.5px solid ${TOKENS.borderHover}`, borderRadius: 24,
-            padding: "12px 24px", fontSize: 14, cursor: "pointer", fontFamily: "'DM Sans', sans-serif"
+            background: "rgba(255,255,255,0.8)", color: "#111", border: `1.5px solid #d0d0d0`, borderRadius: 24,
+            padding: "12px 24px", fontSize: 14, cursor: "pointer", fontFamily: "'DM Sans', sans-serif",
+            backdropFilter: "blur(8px)"
           }}
         >
           See How It Works
@@ -617,7 +621,7 @@ const Headline = () => {
       </div>
 
       <StatsBar />
-    </div>
+    </motion.div>
   );
 };
 
@@ -630,29 +634,35 @@ const StatsBar = () => {
   ];
 
   return (
-    <div style={{ marginTop: 28, display: "flex", gap: 10, flexWrap: "wrap" }}>
+    <motion.div 
+      variants={staggerContainer}
+      initial="hidden"
+      animate="show"
+      style={{ marginTop: 28, display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}
+    >
       {stats.map((stat, i) => (
         <motion.div 
           key={i}
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.9 + i * 0.08, duration: 0.4 }}
-          style={{
-            border: `1px solid ${TOKENS.border}`, borderRadius: 24, padding: "7px 14px",
-            background: TOKENS.bgCard, display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", fontSize: 12
+          variants={cardVariants}
+          style={{ 
+            background: "rgba(255,255,255,0.85)", border: "1px solid rgba(229,229,229,0.7)", 
+            borderRadius: 24, padding: "7px 14px", backdropFilter: "blur(8px)",
+            display: "flex", alignItems: "center", gap: 6
           }}
         >
-          {stat.icon && <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 14, height: 14 }}>{stat.icon}</span>}
-          {stat.bold && <strong style={{ fontWeight: 700, color: TOKENS.accent }}>{stat.bold}</strong>}
-          <span style={{ color: TOKENS.textMuted }}>{stat.light}</span>
+          {stat.icon && <div style={{ color: "#666", display: "flex" }}>{stat.icon}</div>}
+          <div style={{ fontSize: 12 }}>
+            <strong style={{ color: "#111" }}>{stat.bold}</strong>
+            <span style={{ color: "#666" }}>{stat.light}</span>
+          </div>
         </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 };
 
 const ProblemSection = () => (
-  <SectionWrapper isAlt style={{ borderLeft: `4px solid ${TOKENS.accentSage}` }}>
+  <SectionWrapper isAlt style={{ borderLeft: `4px solid #a8d9bc`, backgroundColor: "#F9FCFA" }}>
     <motion.div variants={fadeUp} style={{ maxWidth: 600, margin: "0 auto" }}>
       <h2 style={{ fontSize: 24, fontWeight: 700, lineHeight: 1.2, marginBottom: 16, color: TOKENS.textPrimary }}>
         Healthcare Systems Still Operate in Silos
@@ -677,7 +687,7 @@ const Products = () => {
   const productColors = [TOKENS.accent, TOKENS.forest, TOKENS.goldDark];
 
   return (
-    <SectionWrapper style={{ backgroundColor: TOKENS.bgSection }}>
+    <SectionWrapper style={{ backgroundColor: "#FFFFFF" }}>
       <motion.h2 variants={fadeUp} style={{ fontSize: 28, fontWeight: 700, lineHeight: 1.2, textAlign: "center", marginBottom: 16, color: TOKENS.textPrimary }}>
         Explore Our Healthcare Solutions<br/>and Capabilities
       </motion.h2>
@@ -688,57 +698,63 @@ const Products = () => {
         Our platform connects hospitals, doctors, ambulances, and critical infrastructure into a single intelligent network designed to support faster medical response and better healthcare coordination.
       </motion.p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.3fr 1fr", gridTemplateRows: "auto auto", gap: 16, marginBottom: 32 }}>
-        <motion.div variants={cardVariants} custom={0} whileHover={{ y: -5, boxShadow: TOKENS.shadow }} style={{
-          border: `1px solid ${TOKENS.border}`, background: TOKENS.bgCard, borderRadius: 24, padding: "32px 20px",
-          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 12, cursor: "pointer"
-        }}>
-          <div style={{ fontSize: 28, color: productColors[0] }}><PulseIcon /></div>
-          <span style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.2, color: TOKENS.textPrimary }}>Hospital Resource Network</span>
-          <span style={{ fontSize: 13, color: TOKENS.textMuted, lineHeight: 1.5 }}>Real-time visibility of ICU beds, ventilators, and emergency resources across connected hospitals.</span>
-        </motion.div>
-        
-        <motion.div variants={cardVariants} custom={1} whileHover={{ y: -5, boxShadow: TOKENS.shadow }} style={{
-          gridRow: "span 2", border: `1px solid ${TOKENS.accentSage}`, background: TOKENS.accentTint, borderRadius: 28, padding: "40px 24px",
-          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 16, cursor: "pointer", minHeight: 280
-        }}>
-          <div style={{ fontSize: 48, color: TOKENS.accent }}><PillIcon /></div>
-          <span style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.2, color: TOKENS.textPrimary }}>Smart Emergency Coordination</span>
-          <span style={{ fontSize: 14, color: TOKENS.textMuted, lineHeight: 1.6 }}>AI-assisted system that helps ambulances and emergency teams identify the nearest hospital with available resources instantly.</span>
-        </motion.div>
-
-        <motion.div variants={cardVariants} custom={2} whileHover={{ y: -5, boxShadow: TOKENS.shadow }} style={{
-          border: `1px solid ${TOKENS.border}`, background: TOKENS.bgCard, borderRadius: 24, padding: "32px 20px",
-          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 12, cursor: "pointer"
-        }}>
-          <div style={{ fontSize: 28, color: productColors[1] }}><StethoscopeIcon /></div>
-          <span style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.2, color: TOKENS.textPrimary }}>Medical Devices Integration</span>
-          <span style={{ fontSize: 13, color: TOKENS.textMuted, lineHeight: 1.5 }}>Connect and monitor hospital equipment to ensure availability and efficient utilization across healthcare facilities.</span>
-        </motion.div>
-
-        <motion.div variants={cardVariants} custom={3} whileHover={{ y: -5, boxShadow: TOKENS.shadow }} style={{
-          border: `1px solid ${TOKENS.border}`, background: TOKENS.bgCard, borderRadius: 24, padding: "32px 20px",
-          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 12, cursor: "pointer"
-        }}>
-          <div style={{ fontSize: 28, color: productColors[2] }}><AtomIcon /></div>
-          <span style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.2, color: TOKENS.textPrimary }}>Biological & Diagnostic Support</span>
-          <span style={{ fontSize: 13, color: TOKENS.textMuted, lineHeight: 1.5 }}>Integrated data systems enabling laboratories and diagnostic centers to share critical patient insights securely.</span>
-        </motion.div>
-
-        <motion.div variants={cardVariants} custom={4} whileHover={{ y: -5, boxShadow: TOKENS.shadow }} style={{
-          border: `1px solid ${TOKENS.border}`, background: TOKENS.bgCard, borderRadius: 24, padding: "32px 20px",
-          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 12, cursor: "pointer"
-        }}>
-          <div style={{ fontSize: 28, color: productColors[0] }}><SyringeIcon /></div>
-          <span style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.2, color: TOKENS.textPrimary }}>Vaccination & Public Health</span>
-          <span style={{ fontSize: 13, color: TOKENS.textMuted, lineHeight: 1.5 }}>Support large-scale vaccination and healthcare initiatives through centralized planning and resource coordination.</span>
-        </motion.div>
-      </div>
+      <motion.div 
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        style={{ display: "grid", gridTemplateColumns: "1fr 1.3fr 1fr", gridTemplateRows: "auto auto", gap: 16, marginBottom: 32 }}
+      >
+        <motion.div variants={cardVariants} whileHover={{ y: -5, boxShadow: TOKENS.shadow }} style={{
+           border: `1px solid #c5d5e8`, background: "#F0F4F8", borderRadius: 24, padding: "32px 20px",
+           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 12, cursor: "pointer"
+         }}>
+           <div style={{ fontSize: 28, color: "#2c4a6e" }}><PulseIcon /></div>
+           <span style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.2, color: TOKENS.textPrimary }}>Hospital Resource Network</span>
+           <span style={{ fontSize: 13, color: TOKENS.textMuted, lineHeight: 1.5 }}>Real-time visibility of ICU beds, ventilators, and emergency resources across connected hospitals.</span>
+         </motion.div>
+         
+         <motion.div variants={cardVariants} whileHover={{ y: -5, boxShadow: TOKENS.shadow }} style={{
+           gridRow: "span 2", border: `1px solid #a8d9bc`, background: "#F0F8F4", borderRadius: 28, padding: "40px 24px",
+           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 16, cursor: "pointer", minHeight: 280
+         }}>
+           <div style={{ fontSize: 48, color: "#1a5c3a" }}><PillIcon /></div>
+           <span style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.2, color: TOKENS.textPrimary }}>Smart Emergency Coordination</span>
+           <span style={{ fontSize: 14, color: TOKENS.textMuted, lineHeight: 1.6 }}>AI-assisted system that helps ambulances and emergency teams identify the nearest hospital with available resources instantly.</span>
+         </motion.div>
+ 
+         <motion.div variants={cardVariants} whileHover={{ y: -5, boxShadow: TOKENS.shadow }} style={{
+           border: `1px solid #d0b8f0`, background: "#F5F0FA", borderRadius: 24, padding: "32px 20px",
+           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 12, cursor: "pointer"
+         }}>
+           <div style={{ fontSize: 28, color: "#4a2c7a" }}><StethoscopeIcon /></div>
+           <span style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.2, color: TOKENS.textPrimary }}>Medical Devices Integration</span>
+           <span style={{ fontSize: 13, color: TOKENS.textMuted, lineHeight: 1.5 }}>Connect and monitor hospital equipment to ensure availability and efficient utilization across healthcare facilities.</span>
+         </motion.div>
+ 
+         <motion.div variants={cardVariants} whileHover={{ y: -5, boxShadow: TOKENS.shadow }} style={{
+           border: `1px solid #f0d9b0`, background: "#FDF6EC", borderRadius: 24, padding: "32px 20px",
+           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 12, cursor: "pointer"
+         }}>
+           <div style={{ fontSize: 28, color: "#7a4f1a" }}><AtomIcon /></div>
+           <span style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.2, color: TOKENS.textPrimary }}>Biological & Diagnostic Support</span>
+           <span style={{ fontSize: 13, color: TOKENS.textMuted, lineHeight: 1.5 }}>Integrated data systems enabling laboratories and diagnostic centers to share critical patient insights securely.</span>
+         </motion.div>
+ 
+         <motion.div variants={cardVariants} whileHover={{ y: -5, boxShadow: TOKENS.shadow }} style={{
+           border: `1px solid #f0b8b8`, background: "#FEF0F0", borderRadius: 24, padding: "32px 20px",
+           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 12, cursor: "pointer"
+         }}>
+           <div style={{ fontSize: 28, color: "#7a1f1f" }}><SyringeIcon /></div>
+           <span style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.2, color: TOKENS.textPrimary }}>Vaccination & Public Health</span>
+           <span style={{ fontSize: 13, color: TOKENS.textMuted, lineHeight: 1.5 }}>Support large-scale vaccination and healthcare initiatives through centralized planning and resource coordination.</span>
+         </motion.div>
+       </motion.div>
 
       <motion.div variants={fadeUp} style={{ display: "flex", alignItems: "center", gap: 16, padding: "0 10px" }}>
         <motion.div whileHover={{ scale: 1.04, color: TOKENS.accent }} whileTap={{ scale: 0.96 }} style={{
           width: 40, height: 40, borderRadius: "50%", border: `1px solid ${TOKENS.border}`,
-          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", color: TOKENS.textPrimary
+          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", color: TOKENS.textPrimary, background: "#F0F4F8"
         }}>
           <PlusIcon />
         </motion.div>
@@ -758,7 +774,7 @@ const Awards = () => {
   ];
 
   return (
-    <SectionWrapper>
+    <SectionWrapper style={{ backgroundColor: "#FAF9F6" }}>
       <motion.div variants={fadeUp} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, gap: 16 }}>
         <h2 style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.2, flex: 1, maxWidth: "55%", color: TOKENS.textPrimary }}>Our Impact & Recognition</h2>
         <p style={{ fontSize: 11, color: TOKENS.textMuted, lineHeight: 1.5, flex: 1, maxWidth: "42%" }}>
@@ -768,47 +784,50 @@ const Awards = () => {
 
       <div style={{ display: "flex", gap: 16 }}>
         <motion.div variants={fadeUp} style={{
-          width: "45%", height: 200, borderRadius: 20, background: TOKENS.heroGradient, position: "relative", overflow: "hidden"
+          width: "45%", height: 200, borderRadius: 20, background: "linear-gradient(135deg, #F0F4F8 0%, #E8F0DA 100%)", position: "relative", overflow: "hidden"
         }}>
           <TowerSVG />
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 10, display: "flex", gap: 8, alignItems: "center" }}>
-            <motion.div whileHover={{ scale: 1.04, backgroundColor: TOKENS.accentTint }} whileTap={{ scale: 0.96 }} style={{
-              background: "rgba(255,255,255,0.9)", borderRadius: 100, padding: "6px 12px", fontSize: 11, fontWeight: 600, cursor: "pointer", color: TOKENS.textPrimary, border: `1px solid ${TOKENS.border}`
+            <motion.div whileHover={{ scale: 1.04, backgroundColor: "#E8F0DA" }} whileTap={{ scale: 0.96 }} style={{
+              background: "rgba(255,255,255,0.9)", borderRadius: 100, padding: "6px 12px", fontSize: 11, fontWeight: 600, cursor: "pointer", color: "#3a5016", border: `1px solid #c8daa0`
             }}>
               Learn More
             </motion.div>
-            <motion.div whileHover={{ scale: 1.04, backgroundColor: TOKENS.accentTint }} whileTap={{ scale: 0.96 }} style={{
-              width: 28, height: 28, borderRadius: "50%", background: "rgba(255,255,255,0.9)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: TOKENS.textPrimary, border: `1px solid ${TOKENS.border}`
+            <motion.div whileHover={{ scale: 1.04, backgroundColor: "#E8F0DA" }} whileTap={{ scale: 0.96 }} style={{
+              width: 28, height: 28, borderRadius: "50%", background: "rgba(255,255,255,0.9)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#3a5016", border: `1px solid #c8daa0`
             }}>
               <ShareIcon />
             </motion.div>
           </div>
         </motion.div>
 
-        <div style={{ width: "55%", display: "flex", flexDirection: "column", gap: 8 }}>
+        <motion.div 
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          style={{ width: "55%", display: "flex", flexDirection: "column", gap: 8 }}
+        >
           {awardsList.map((award, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, x: 16 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.45 }}
-              viewport={{ once: true }}
-              whileHover={{ x: 2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", borderColor: TOKENS.gold }}
+              variants={fadeUp}
+              whileHover={{ x: 2, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", borderColor: "#f0d9b0" }}
               style={{
-                border: `1px solid ${TOKENS.border}`, borderRadius: 14, padding: "12px 14px",
-                display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", background: TOKENS.bgCard
+                border: `1px solid #e5e5e5`, borderRadius: 14, padding: "12px 14px",
+                display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", background: "#FFFFFF"
               }}
             >
               <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingRight: 8 }}>
                 <span style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.2, color: TOKENS.textPrimary }}>{award.title}</span>
                 {award.sub && <span style={{ fontSize: 11, color: TOKENS.textMuted, lineHeight: 1.3 }}>{award.sub}</span>}
               </div>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", background: TOKENS.accentTint, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: TOKENS.goldDark }}>
+              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#FDF6EC", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#7a4f1a" }}>
                 {award.icon}
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </SectionWrapper>
   );
@@ -818,9 +837,9 @@ const Footer = () => (
   <footer
     style={{
       padding: "60px 24px 40px",
-      borderTop: `1px solid ${TOKENS.border}`,
+      borderTop: `1px solid #e5e5e5`,
       marginTop: 40,
-      backgroundColor: TOKENS.bgSection,
+      backgroundColor: "#F0F4F8", // Slate tint for the footer
       color: TOKENS.textPrimary
     }}
   >
@@ -867,7 +886,7 @@ const Footer = () => (
       </div>
     </div>
     
-    <div className="max-w-custom" style={{ marginTop: 40, paddingTop: 20, borderTop: `1px solid ${TOKENS.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div className="max-w-custom" style={{ marginTop: 40, paddingTop: 20, borderTop: `1px solid #c5d5e8`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
       <p style={{ fontSize: 11, color: TOKENS.textMuted }}>© 2026 Arogya Saarthi. All rights reserved.</p>
       <div style={{ display: "flex", gap: 16 }}>
         {/* Social icons would go here */}
@@ -966,18 +985,17 @@ const TrustBar = () => {
     </div>
   );
 };
-
-const HowItWorks = () => {
+const HowItWorks = () => {
   const steps = [
     { 
       title: "Connect", 
       desc: "Hospitals & ambulances join the unified network securely.", 
       icon: <GlobeIcon />,
       theme: {
-        bg: TOKENS.accentTint,
-        border: TOKENS.accentSage,
-        ring: TOKENS.accentTint,
-        stroke: TOKENS.accent
+        bg: "#F0F8F4",
+        border: "#a8d9bc",
+        ring: "#e0f2e8",
+        stroke: "#1a5c3a"
       }
     },
     { 
@@ -985,10 +1003,10 @@ const HowItWorks = () => {
       desc: "Real-time visibility into beds, doctors, and resources.", 
       icon: <ActivityIcon />,
       theme: {
-        bg: TOKENS.goldTint,
-        border: TOKENS.gold,
-        ring: TOKENS.goldTint,
-        stroke: TOKENS.goldDark
+        bg: "#FDF6EC",
+        border: "#f0d9b0",
+        ring: "#f8eadd",
+        stroke: "#7a4f1a"
       }
     },
     { 
@@ -996,22 +1014,22 @@ const HowItWorks = () => {
       desc: "Optimized routing and prep for immediate patient care.", 
       icon: <LeafIcon />,
       theme: {
-        bg: TOKENS.mint,
-        border: TOKENS.forest,
-        ring: TOKENS.mint,
-        stroke: TOKENS.forest
+        bg: "#E8F0DA",
+        border: "#c8daa0",
+        ring: "#d8e8c8",
+        stroke: "#3a5016"
       }
     }
   ];
 
   return (
-    <SectionWrapper style={{ backgroundColor: TOKENS.bgSection }}>
+    <SectionWrapper style={{ backgroundColor: "#F9FCFA" }}>
       <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: "center", marginBottom: 60, color: TOKENS.textPrimary }}>How It Works</h2>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", position: "relative" }}>
         {/* Dashed Line */}
         <svg style={{ position: "absolute", top: 40, left: "10%", width: "80%", height: 2, zIndex: 0 }}>
-          <line x1="0" y1="0" x2="50%" y2="0" stroke={TOKENS.accentSage} strokeWidth="2" strokeDasharray="6 6" className="dashed-line" />
-          <line x1="50%" y1="0" x2="100%" y2="0" stroke={TOKENS.gold} strokeWidth="2" strokeDasharray="6 6" className="dashed-line" />
+          <line x1="0" y1="0" x2="50%" y2="0" stroke="#a8d9bc" strokeWidth="2" strokeDasharray="6 6" className="dashed-line" />
+          <line x1="50%" y1="0" x2="100%" y2="0" stroke="#f0d9b0" strokeWidth="2" strokeDasharray="6 6" className="dashed-line" />
         </svg>
         
         {steps.map((step, i) => (
@@ -1122,6 +1140,7 @@ const LiveCounters = () => {
             requestAnimationFrame(animate);
           }
         };
+
         requestAnimationFrame(animate);
       }
     }, [isInView, target]);
@@ -1130,52 +1149,61 @@ const LiveCounters = () => {
   };
 
   return (
-    <section style={{ padding: "72px 24px", backgroundColor: TOKENS.bgSection, color: TOKENS.textPrimary, position: "relative", overflow: "hidden" }}>
-      <div style={{ position: "absolute", inset: 0, opacity: 0.05, backgroundImage: `radial-gradient(circle at 2px 2px, ${TOKENS.accent} 1px, transparent 0)`, backgroundSize: "24px 24px" }} />
-      <div className="max-w-custom" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20, position: "relative" }}>
+    <SectionWrapper style={{ backgroundColor: "#1A2530", color: "white", padding: "60px 24px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24, textAlign: "center", position: "relative" }}>
+        {/* Subtle background glow */}
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100%", height: "100%", background: "radial-gradient(circle, rgba(168,217,188,0.1) 0%, rgba(26,37,48,0) 70%)", pointerEvents: "none" }} />
+        
         {stats.map((stat, i) => (
-          <div key={i} style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 36, fontWeight: 700, marginBottom: 8, color: TOKENS.accent }}>
+          <motion.div 
+            key={i}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.15, duration: 0.5 }}
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, zIndex: 1 }}
+          >
+            <div style={{ fontSize: 42, fontWeight: 700, color: "#a8d9bc" }}>
               <Counter target={stat.target} isFloat={stat.isFloat} />{stat.suffix}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 500, color: TOKENS.textMuted }}>{stat.label}</div>
-          </div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", fontWeight: 500, letterSpacing: 0.5 }}>{stat.label}</div>
+          </motion.div>
         ))}
       </div>
-    </section>
+    </SectionWrapper>
   );
 };
 
 const DashboardPreview = () => (
-  <SectionWrapper style={{ backgroundColor: TOKENS.accentTint }}>
-    <div style={{ border: `1px solid ${TOKENS.border}`, borderRadius: 12, overflow: "hidden", boxShadow: TOKENS.shadow, backgroundColor: TOKENS.bgCard }}>
-      <div style={{ padding: "12px 20px", borderBottom: `1px solid ${TOKENS.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: TOKENS.bgCard }}>
+  <SectionWrapper style={{ backgroundColor: "#F0F8F4" }}>
+    <div style={{ border: `1px solid #c8daa0`, borderRadius: 12, overflow: "hidden", boxShadow: TOKENS.shadow, backgroundColor: "#FFFFFF" }}>
+      <div style={{ padding: "12px 20px", borderBottom: `1px solid #c8daa0`, display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#FFFFFF" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#E53E3E" }} className="pulse-alert" />
           <span style={{ fontSize: 12, fontWeight: 700, color: TOKENS.textPrimary }}>LIVE TRACKING: AMB-042</span>
         </div>
         <div style={{ fontSize: 11, color: TOKENS.textMuted }}>ETA: 4 MINS</div>
       </div>
-      <div style={{ height: 300, position: "relative", backgroundColor: TOKENS.bgCard, padding: 20 }}>
+      <div style={{ height: 300, position: "relative", backgroundColor: "#FFFFFF", padding: 20 }}>
         {/* Simplified Map UI */}
         <svg style={{ width: "100%", height: "100%" }}>
-          <path d="M50 250 Q 150 200 250 250 T 450 150" fill="none" stroke={TOKENS.border} strokeWidth="4" strokeLinecap="round" />
+          <path d="M50 250 Q 150 200 250 250 T 450 150" fill="none" stroke="#e0f2e8" strokeWidth="4" strokeLinecap="round" />
           <motion.circle
             r="6"
-            fill={TOKENS.accent}
+            fill="#1a5c3a"
             style={{ offsetPath: "path('M50 250 Q 150 200 250 250 T 450 150')" }}
             animate={{ offsetDistance: ["0%", "100%"] }}
             transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
           />
         </svg>
-        <div style={{ position: "absolute", bottom: 20, left: 20, right: 20, backgroundColor: "rgba(255,255,255,0.95)", padding: 12, borderRadius: 8, border: `1px solid ${TOKENS.border}`, boxShadow: TOKENS.shadow }}>
+        <div style={{ position: "absolute", bottom: 20, left: 20, right: 20, backgroundColor: "rgba(255,255,255,0.95)", padding: 12, borderRadius: 8, border: `1px solid #c8daa0`, boxShadow: TOKENS.shadow }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 600, color: TOKENS.textPrimary }}>Route Progress</span>
-            <span style={{ fontSize: 11, fontWeight: 600, color: TOKENS.accent }}>72%</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: "#1a5c3a" }}>72%</span>
           </div>
-          <div style={{ height: 4, backgroundColor: TOKENS.accentTint, borderRadius: 2, overflow: "hidden" }}>
+          <div style={{ height: 4, backgroundColor: "#E8F0DA", borderRadius: 2, overflow: "hidden" }}>
             <motion.div
-              style={{ height: "100%", backgroundColor: TOKENS.accent }}
+              style={{ height: "100%", backgroundColor: "#1a5c3a" }}
               initial={{ width: 0 }}
               whileInView={{ width: "72%" }}
               transition={{ duration: 1.5 }}
@@ -1189,27 +1217,27 @@ const DashboardPreview = () => (
       @keyframes pulse-red { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
     `}</style>
   </SectionWrapper>
-);
+);;
 
 const Testimonials = () => {
   const items = [
-    { quote: "Arogya Saarthi has reduced our response time by 40%. It's a game changer.", name: "Dr. A. Sharma", role: "ER Chief", hospital: "City General", color: TOKENS.accent },
-    { quote: "The visibility into bed availability saves lives during critical transfers.", name: "Nurse Priya", role: "Head Nurse", hospital: "Care Plus", color: TOKENS.gold },
-    { quote: "Finally, a system that connects all stakeholders in real-time.", name: "Rajesh K.", role: "Admin", hospital: "Metro Health", color: TOKENS.forest }
+    { quote: "Arogya Saarthi has reduced our response time by 40%. It's a game changer.", name: "Dr. A. Sharma", role: "ER Chief", hospital: "City General", color: "#1a5c3a" },
+    { quote: "The visibility into bed availability saves lives during critical transfers.", name: "Nurse Priya", role: "Head Nurse", hospital: "Care Plus", color: "#7a4f1a" },
+    { quote: "Finally, a system that connects all stakeholders in real-time.", name: "Rajesh K.", role: "Admin", hospital: "Metro Health", color: "#2c4a6e" }
   ];
 
   return (
-    <SectionWrapper style={{ backgroundColor: TOKENS.bgSection }}>
+    <SectionWrapper style={{ backgroundColor: "#FFFFFF" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
         {items.map((item, i) => (
           <motion.div
             key={i}
             whileHover={{ y: -5 }}
-            style={{ padding: 24, border: `1px solid ${TOKENS.border}`, borderRadius: 12, backgroundColor: TOKENS.bgCard, boxShadow: TOKENS.shadow }}
+            style={{ padding: 24, border: `1px solid #e5e5e5`, borderRadius: 12, backgroundColor: "#F9FCFA", boxShadow: TOKENS.shadow }}
           >
             <p style={{ fontSize: 14, fontStyle: "italic", color: TOKENS.textPrimary, marginBottom: 20, lineHeight: 1.6 }}>"{item.quote}"</p>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ width: 32, height: 32, borderRadius: "50%", backgroundColor: item.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "white", border: `1px solid ${TOKENS.border}` }} className="avatar-float">
+              <div style={{ width: 32, height: 32, borderRadius: "50%", backgroundColor: item.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "white", border: `1px solid #e5e5e5` }} className="avatar-float">
                 {item.name[4]}
               </div>
               <div>
@@ -1232,26 +1260,26 @@ const Testimonials = () => {
 };
 
 const IntegrationHub = () => (
-  <SectionWrapper style={{ textAlign: "center", backgroundColor: TOKENS.bgSection }}>
+  <SectionWrapper style={{ textAlign: "center", backgroundColor: "#FDF6EC" }}>
     <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 60, color: TOKENS.textPrimary }}>Integration Hub</h2>
     <div style={{ position: "relative", width: 300, height: 300, margin: "0 auto" }}>
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-        style={{ position: "absolute", inset: 0, border: `1px dashed ${TOKENS.accentSage}`, borderRadius: "50%", opacity: 0.5 }}
+        style={{ position: "absolute", inset: 0, border: `1px dashed #f0d9b0`, borderRadius: "50%", opacity: 0.5 }}
       />
-      <div style={{ position: "absolute", inset: "35%", backgroundColor: TOKENS.bgCard, borderRadius: "50%", border: `2px solid ${TOKENS.accent}`, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2, boxShadow: TOKENS.shadow, color: TOKENS.accent }}>
+      <div style={{ position: "absolute", inset: "35%", backgroundColor: "#FFFFFF", borderRadius: "50%", border: `2px solid #7a4f1a`, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2, boxShadow: TOKENS.shadow, color: "#7a4f1a" }}>
         <GridIcon />
       </div>
       
       {[0, 60, 120, 180, 240, 300].map((angle, i) => (
-        <div key={i} style={{ position: "absolute", top: "50%", left: "50%", width: "50%", height: 2, backgroundColor: TOKENS.accentSage, transformOrigin: "left center", transform: `rotate(${angle}deg)`, zIndex: 1 }}>
+        <div key={i} style={{ position: "absolute", top: "50%", left: "50%", width: "50%", height: 2, backgroundColor: "#f0d9b0", transformOrigin: "left center", transform: `rotate(${angle}deg)`, zIndex: 1 }}>
           <motion.div
-            style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: TOKENS.accent, position: "absolute", top: -2 }}
+            style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#7a4f1a", position: "absolute", top: -2 }}
             animate={{ left: ["0%", "100%"] }}
             transition={{ duration: 2, repeat: Infinity, delay: i * 0.3, ease: "easeInOut" }}
           />
-          <div style={{ position: "absolute", right: -20, top: -10, width: 20, height: 20, borderRadius: 4, backgroundColor: TOKENS.bgCard, border: `1px solid ${TOKENS.border}`, transform: `rotate(-${angle}deg)` }} />
+          <div style={{ position: "absolute", right: -20, top: -10, width: 20, height: 20, borderRadius: 4, backgroundColor: "#FFFFFF", border: `1px solid #e5e5e5`, transform: `rotate(-${angle}deg)` }} />
         </div>
       ))}
     </div>
@@ -1266,20 +1294,20 @@ const SecurityCompliance = () => {
   ];
 
   return (
-    <SectionWrapper style={{ backgroundColor: TOKENS.accentTint }}>
+    <SectionWrapper style={{ backgroundColor: "#F0F4F8" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
         {items.map((item, i) => (
-          <div key={i} style={{ textAlign: "center", padding: 30, border: `1px solid ${TOKENS.border}`, borderRadius: 12, backgroundColor: TOKENS.bgCard, boxShadow: TOKENS.shadow }}>
+          <div key={i} style={{ textAlign: "center", padding: 30, border: `1px solid #c5d5e8`, borderRadius: 12, backgroundColor: "#FFFFFF", boxShadow: TOKENS.shadow }}>
             <div style={{ position: "relative", width: 60, height: 60, margin: "0 auto 20px" }}>
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                style={{ position: "absolute", inset: -5, border: `1px dashed ${TOKENS.accentSage}`, borderRadius: "50%", opacity: 0.3 }}
+                style={{ position: "absolute", inset: -5, border: `1px dashed #c5d5e8`, borderRadius: "50%", opacity: 0.8 }}
               />
               <motion.div
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 3, repeat: Infinity }}
-                style={{ width: "100%", height: "100%", borderRadius: "50%", backgroundColor: TOKENS.accentTint, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: TOKENS.accent, border: `1px solid ${TOKENS.accentSage}` }}
+                style={{ width: "100%", height: "100%", borderRadius: "50%", backgroundColor: "#F0F4F8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: "#2c4a6e", border: `1px solid #c5d5e8` }}
               >
                 {item.icon}
               </motion.div>
@@ -1301,28 +1329,37 @@ const Pricing = () => {
   ];
 
   return (
-    <SectionWrapper style={{ backgroundColor: TOKENS.bgSection }}>
-      <div style={{ textAlign: "center", marginBottom: 40 }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 12, padding: 4, backgroundColor: TOKENS.bgCard, borderRadius: 100, border: `1px solid ${TOKENS.border}` }}>
-          <button onClick={() => setIsAnnual(false)} style={{ border: "none", padding: "6px 16px", borderRadius: 100, fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: !isAnnual ? TOKENS.accent : "transparent", boxShadow: !isAnnual ? TOKENS.shadow : "none", color: !isAnnual ? "white" : TOKENS.textPrimary }}>Monthly</button>
-          <button onClick={() => setIsAnnual(true)} style={{ border: "none", padding: "6px 16px", borderRadius: 100, fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: isAnnual ? TOKENS.accent : "transparent", boxShadow: isAnnual ? TOKENS.shadow : "none", color: isAnnual ? "white" : TOKENS.textPrimary }}>Annual</button>
+    <SectionWrapper style={{ backgroundColor: "#FAF9F6" }}>
+      <motion.div 
+        variants={fadeUp}
+        style={{ textAlign: "center", marginBottom: 40 }}
+      >
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 12, padding: 4, backgroundColor: "#FFFFFF", borderRadius: 100, border: `1px solid #e5e5e5` }}>
+          <button onClick={() => setIsAnnual(false)} style={{ border: "none", padding: "6px 16px", borderRadius: 100, fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: !isAnnual ? "#3a5016" : "transparent", boxShadow: !isAnnual ? TOKENS.shadow : "none", color: !isAnnual ? "white" : TOKENS.textPrimary }}>Monthly</button>
+          <button onClick={() => setIsAnnual(true)} style={{ border: "none", padding: "6px 16px", borderRadius: 100, fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: isAnnual ? "#3a5016" : "transparent", boxShadow: isAnnual ? TOKENS.shadow : "none", color: isAnnual ? "white" : TOKENS.textPrimary }}>Annual</button>
         </div>
-      </div>
+      </motion.div>
       
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+      <motion.div 
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}
+      >
         {tiers.map((tier, i) => (
-          <div key={i} style={{ padding: 30, border: tier.recommended ? `2px solid ${TOKENS.accent}` : `1px solid ${TOKENS.border}`, borderRadius: 12, backgroundColor: TOKENS.bgCard, position: "relative", boxShadow: tier.recommended ? "0 10px 30px rgba(61, 79, 28, 0.1)" : TOKENS.shadow }}>
-            {tier.recommended && <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", backgroundColor: TOKENS.goldTint, color: TOKENS.goldDark, padding: "2px 10px", borderRadius: 100, fontSize: 10, fontWeight: 700, border: `1px solid ${TOKENS.gold}` }} className="glow-pulse">RECOMMENDED</div>}
+          <motion.div key={i} variants={cardVariants} style={{ padding: 30, border: tier.recommended ? `2px solid #3a5016` : `1px solid #e5e5e5`, borderRadius: 12, backgroundColor: "#FFFFFF", position: "relative", boxShadow: tier.recommended ? "0 10px 30px rgba(58, 80, 22, 0.1)" : TOKENS.shadow }}>
+            {tier.recommended && <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", backgroundColor: "#E8F0DA", color: "#3a5016", padding: "2px 10px", borderRadius: 100, fontSize: 10, fontWeight: 700, border: `1px solid #c8daa0` }} className="glow-pulse">RECOMMENDED</div>}
             <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 10, color: TOKENS.textPrimary }}>{tier.name}</h3>
-            <div style={{ fontSize: 32, fontWeight: 700, marginBottom: 10, color: TOKENS.accent }}>{typeof tier.price === 'number' ? `$${tier.price}` : tier.price}<span style={{ fontSize: 14, fontWeight: 400, color: TOKENS.textMuted }}>{typeof tier.price === 'number' ? '/mo' : ''}</span></div>
+            <div style={{ fontSize: 32, fontWeight: 700, marginBottom: 10, color: "#3a5016" }}>{typeof tier.price === 'number' ? `$${tier.price}` : tier.price}<span style={{ fontSize: 14, fontWeight: 400, color: TOKENS.textMuted }}>{typeof tier.price === 'number' ? '/mo' : ''}</span></div>
             <p style={{ fontSize: 12, color: TOKENS.textMuted, marginBottom: 20 }}>{tier.desc}</p>
-            <button style={{ width: "100%", padding: "10px", borderRadius: 6, border: tier.recommended ? "none" : `1px solid ${TOKENS.border}`, backgroundColor: tier.recommended ? TOKENS.accent : "transparent", color: tier.recommended ? "white" : TOKENS.textPrimary, fontWeight: 600, cursor: "pointer" }}>Get Started</button>
-          </div>
+            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} style={{ width: "100%", padding: "10px", borderRadius: 6, border: tier.recommended ? "none" : `1px solid #e5e5e5`, backgroundColor: tier.recommended ? "#3a5016" : "transparent", color: tier.recommended ? "white" : TOKENS.textPrimary, fontWeight: 600, cursor: "pointer" }}>Get Started</motion.button>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
       <style>{`
         .glow-pulse { animation: glow 2s infinite; }
-        @keyframes glow { 0% { box-shadow: 0 0 0 0 rgba(61, 79, 28, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(61, 79, 28, 0); } 100% { box-shadow: 0 0 0 0 rgba(61, 79, 28, 0); } }
+        @keyframes glow { 0% { box-shadow: 0 0 0 0 rgba(58, 80, 22, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(58, 80, 22, 0); } 100% { box-shadow: 0 0 0 0 rgba(58, 80, 22, 0); } }
       `}</style>
     </SectionWrapper>
   );
@@ -1330,25 +1367,31 @@ const Pricing = () => {
 
 const Team = () => {
   const members = [
-    { name: "Dr. Aryan", role: "Founder", bio: "Ex-WHO consultant." },
-    { name: "S. Mehta", role: "CTO", bio: "Distributed systems expert." },
-    { name: "R. Singh", role: "Ops", bio: "Healthcare logistics lead." },
-    { name: "A. Patel", role: "Product", bio: "UI/UX for medical systems." }
+    { name: "Dr. Aryan", role: "Founder", bio: "Ex-WHO consultant.", color: "#3a5016", bg: "#E8F0DA", border: "#c8daa0" },
+    { name: "S. Mehta", role: "CTO", bio: "Distributed systems expert.", color: "#2c4a6e", bg: "#F0F4F8", border: "#c5d5e8" },
+    { name: "R. Singh", role: "Ops", bio: "Healthcare logistics lead.", color: "#7a4f1a", bg: "#FDF6EC", border: "#f0d9b0" },
+    { name: "A. Patel", role: "Product", bio: "UI/UX for medical systems.", color: "#1a5c3a", bg: "#F0F8F4", border: "#a8d9bc" }
   ];
 
   return (
-    <SectionWrapper style={{ backgroundColor: TOKENS.bgSection }}>
-      <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: "center", marginBottom: 40, color: TOKENS.textPrimary }}>Our Team</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
+    <SectionWrapper style={{ backgroundColor: "#FFFFFF" }}>
+      <motion.h2 variants={fadeUp} style={{ fontSize: 24, fontWeight: 700, textAlign: "center", marginBottom: 40, color: TOKENS.textPrimary }}>Our Team</motion.h2>
+      <motion.div 
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}
+      >
         {members.map((m, i) => (
-          <motion.div key={i} whileHover={{ y: -5 }} style={{ textAlign: "center" }}>
-            <div style={{ width: 60, height: 60, borderRadius: "50%", backgroundColor: TOKENS.accentTint, margin: "0 auto 16px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, fontWeight: 700, color: TOKENS.accent, border: `1px solid ${TOKENS.accentSage}` }}>{m.name[0]}</div>
+          <motion.div key={i} variants={fadeUp} whileHover={{ y: -5 }} style={{ textAlign: "center" }}>
+            <div style={{ width: 60, height: 60, borderRadius: "50%", backgroundColor: m.bg, margin: "0 auto 16px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, fontWeight: 700, color: m.color, border: `1px solid ${m.border}` }}>{m.name[0]}</div>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: TOKENS.textPrimary }}>{m.name}</h3>
-            <div style={{ fontSize: 11, color: TOKENS.accent, fontWeight: 600, marginBottom: 6 }}>{m.role}</div>
+            <div style={{ fontSize: 11, color: m.color, fontWeight: 600, marginBottom: 6 }}>{m.role}</div>
             <p style={{ fontSize: 11, color: TOKENS.textMuted }}>{m.bio}</p>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
     </SectionWrapper>
   );
 };
@@ -1365,14 +1408,20 @@ const FAQ = () => {
   ];
 
   return (
-    <SectionWrapper style={{ backgroundColor: TOKENS.bgSection }}>
-      <h2 style={{ fontSize: 24, fontWeight: 700, textAlign: "center", marginBottom: 40, color: TOKENS.textPrimary }}>Frequently Asked Questions</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    <SectionWrapper style={{ backgroundColor: "#F9FCFA" }}>
+      <motion.h2 variants={fadeUp} style={{ fontSize: 24, fontWeight: 700, textAlign: "center", marginBottom: 40, color: TOKENS.textPrimary }}>Frequently Asked Questions</motion.h2>
+      <motion.div 
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        style={{ display: "flex", flexDirection: "column", gap: 12 }}
+      >
         {faqs.map((faq, i) => (
-          <div key={i} style={{ border: `1px solid ${TOKENS.border}`, borderRadius: 8, overflow: "hidden", backgroundColor: TOKENS.bgCard }}>
+          <motion.div key={i} variants={fadeUp} style={{ border: `1px solid #e5e5e5`, borderRadius: 8, overflow: "hidden", backgroundColor: "#FFFFFF" }}>
             <button
               onClick={() => setOpen(open === i ? null : i)}
-              style={{ width: "100%", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: TOKENS.bgCard, border: "none", cursor: "pointer", textAlign: "left" }}
+              style={{ width: "100%", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#FFFFFF", border: "none", cursor: "pointer", textAlign: "left" }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10, color: TOKENS.textPrimary }}>
                 <MessageCircleIcon />
@@ -1387,24 +1436,29 @@ const FAQ = () => {
             >
               <div style={{ padding: "0 20px 20px 46px", fontSize: 13, color: TOKENS.textMuted, lineHeight: 1.6 }}>{faq.a}</div>
             </motion.div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </SectionWrapper>
   );
 };
 
 const FinalCTA = () => {
   const [submitted, setSubmitted] = useState(false);
-  const confettiColors = [TOKENS.gold, TOKENS.peach, TOKENS.mint];
+  const confettiColors = ["#E8C87A", "#F4A882", "#D4EAD8"];
 
   return (
-    <section style={{ padding: "100px 24px", backgroundColor: TOKENS.accent, position: "relative", overflow: "hidden" }}>
+    <section style={{ padding: "100px 24px", backgroundColor: "#1A2530", position: "relative", overflow: "hidden" }}>
       {/* Animated Blobs */}
       <motion.div
         animate={{ scale: [1, 1.2, 1], x: [0, 20, 0] }}
         transition={{ duration: 10, repeat: Infinity }}
-        style={{ position: "absolute", top: -50, right: -50, width: 200, height: 200, borderRadius: "50%", backgroundColor: "white", opacity: 0.1, filter: "blur(40px)" }}
+        style={{ position: "absolute", top: -50, right: -50, width: 200, height: 200, borderRadius: "50%", backgroundColor: "#a8d9bc", opacity: 0.15, filter: "blur(40px)" }}
+      />
+      <motion.div
+        animate={{ scale: [1, 1.3, 1], x: [0, -30, 0] }}
+        transition={{ duration: 12, repeat: Infinity, delay: 1 }}
+        style={{ position: "absolute", bottom: -80, left: -40, width: 250, height: 250, borderRadius: "50%", backgroundColor: "#c8daa0", opacity: 0.1, filter: "blur(50px)" }}
       />
       
       <div className="max-w-custom" style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
@@ -1414,7 +1468,7 @@ const FinalCTA = () => {
         {!submitted ? (
           <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} style={{ display: "flex", gap: 10, maxWidth: 400, margin: "0 auto" }}>
             <input type="email" placeholder="Enter your email" required style={{ flex: 1, padding: "12px 16px", borderRadius: 6, border: "none", fontSize: 14, backgroundColor: "white", color: TOKENS.textPrimary }} />
-            <button type="submit" style={{ padding: "12px 24px", borderRadius: 6, border: "none", backgroundColor: "white", color: TOKENS.accent, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+            <button type="submit" style={{ padding: "12px 24px", borderRadius: 6, border: "none", backgroundColor: "#3a5016", color: "white", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
               Submit <SendIcon />
             </button>
           </form>
@@ -1543,9 +1597,6 @@ export default function EvolveBio() {
           <Navbar isDark={isDark} toggleDark={() => setIsDark(!isDark)} />
           <HeroWrapper>
             <Hero />
-            <Sidebar />
-            <Headline />
-            <StatsBar />
           </HeroWrapper>
           <ProblemSection />
           <Products />
