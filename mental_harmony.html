@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saarthi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      /* Fonts */
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+
+      /* Core purple palette */
+      --purple-deepest: #1E0A4A;
+      --purple-deep: #2D1B69;
+      --purple-main: #4C1D95;
+      --purple-mid: #7C3AED;
+      --purple-light: #A78BFA;
+      --purple-pale: #DDD6FE;
+      --purple-ghost: #EDE9FE;
+
+      /* Rose accent */
+      --rose-mid: #E879F9;
+      --rose-light: #F0ABFC;
+      --rose-pale: #FAE8FF;
+
+      /* Glass tokens */
+      --glass-surface: rgba(255, 255, 255, 0.10);
+      --glass-surface-2: rgba(255, 255, 255, 0.16);
+      --glass-border: rgba(255, 255, 255, 0.20);
+      --glass-border-2: rgba(255, 255, 255, 0.35);
+      --glass-blur: blur(16px);
+      --glass-blur-heavy: blur(28px);
+
+      /* Text */
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(255, 255, 255, 0.60);
+      --text-tertiary: rgba(255, 255, 255, 0.35);
+
+      /* Spacing */
+      --page-pad: 48px;
+      --nav-height: 56px;
+
+      /* Radii */
+      --radius-pill: 100px;
+      --radius-card: 16px;
+      --radius-card-sm: 10px;
+
+      /* Transitions */
+      --transition: 0.25s ease;
+      --transition-slow: 0.6s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      background-color: var(--purple-deepest);
+      font-family: var(--font-body);
+      color: var(--text-primary);
+    }
+
+    /* LAYER 1: BASE BACKGROUND */
+    .bg-base {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: radial-gradient(ellipse 80% 70% at 55% 40%,
+          #7C3AED 0%,
+          #4C1D95 35%,
+          #2D1B69 65%,
+          #1E0A4A 100%);
+    }
+
+    /* LAYER 2: SILK FABRIC SVG */
+    .fabric-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      animation: fabric-drift 16s ease-in-out infinite;
+    }
+
+    @keyframes fabric-drift {
+
+      0%,
+      100% {
+        transform: translate(0px, 0px) scale(1.000);
+      }
+
+      25% {
+        transform: translate(3px, -5px) scale(1.006);
+      }
+
+      50% {
+        transform: translate(6px, -2px) scale(1.004);
+      }
+
+      75% {
+        transform: translate(2px, 4px) scale(0.998);
+      }
+    }
+
+    /* LAYER 3: VIGNETTE */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: radial-gradient(ellipse 100% 100% at 50% 50%,
+          transparent 40%,
+          rgba(15, 5, 40, 0.45) 100%);
+    }
+
+    /* LAYER 4: GRAIN OVERLAY */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      pointer-events: none;
+      mix-blend-mode: overlay;
+    }
+
+    /* LAYER 5: FLOATING PARTICLES */
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    @keyframes particle-float {
+      0% {
+        transform: translateY(0px) translateX(0px);
+        opacity: 0;
+      }
+
+      8% {
+        opacity: 1;
+      }
+
+      92% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-160px) translateX(18px);
+        opacity: 0;
+      }
+    }
+
+    /* NAVIGATION BAR */
+    nav {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--page-pad);
+      z-index: 20;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-pill {
+      background: var(--glass-surface);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-pill);
+      padding: 6px 20px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: background var(--transition), color var(--transition);
+      cursor: pointer;
+    }
+
+    .nav-pill:hover {
+      background: var(--glass-surface-2);
+      color: var(--text-primary);
+    }
+
+    .nav-cta {
+      background: var(--glass-surface);
+      border: 1px solid var(--glass-border-2);
+      border-radius: var(--radius-pill);
+      padding: 8px 22px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      transition: all var(--transition);
+    }
+
+    .nav-cta:hover {
+      background: var(--glass-surface-2);
+      border-color: rgba(255, 255, 255, 0.45);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.20);
+    }
+
+    /* HERO CONTENT */
+    .hero-content {
+      position: absolute;
+      left: var(--page-pad);
+      top: 110px;
+      max-width: 460px;
+      z-index: 10;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      animation: fade-up 0.9s ease 0.2s both;
+    }
+
+    .line-1,
+    .line-2 {
+      font-size: clamp(56px, 6vw, 76px);
+      display: block;
+    }
+
+    .hero-body {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      max-width: 300px;
+      margin: 20px 0 0;
+      animation: fade-up 0.8s ease 0.5s both;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 32px;
+      background: var(--glass-surface);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: var(--radius-pill);
+      padding: 12px 28px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      transition: all var(--transition);
+      animation: fade-up 0.7s ease 0.7s both;
+    }
+
+    .hero-cta:hover {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.48);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+    }
+
+    @keyframes fade-up {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* GLASS SPHERE */
+    .sphere-wrap {
+      position: absolute;
+      top: 42px;
+      left: calc(50% - 80px);
+      width: 390px;
+      height: 390px;
+      z-index: 8;
+      animation: sphere-float 7s ease-in-out infinite, sphere-entrance 0.8s ease 0.3s both;
+    }
+
+    @keyframes sphere-float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-14px);
+      }
+    }
+
+    @keyframes sphere-entrance {
+      from {
+        opacity: 0;
+        transform: scale(0.88) translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1.00) translateY(0px);
+      }
+    }
+
+    .sphere-halo {
+      position: absolute;
+      inset: -30px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.20) 0%, rgba(76, 29, 149, 0.30) 50%, transparent 72%);
+      filter: blur(28px);
+      animation: halo-pulse 7s ease-in-out infinite;
+    }
+
+    @keyframes halo-pulse {
+
+      0%,
+      100% {
+        opacity: 0.8;
+        transform: scale(1.00);
+      }
+
+      50% {
+        opacity: 1.0;
+        transform: scale(1.06);
+      }
+    }
+
+    .sphere {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .sphere-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+    }
+
+    .layer-body {
+      background: radial-gradient(circle at 38% 34%,
+          rgba(255, 255, 255, 0.52) 0%,
+          rgba(240, 230, 255, 0.20) 15%,
+          rgba(200, 180, 255, 0.07) 38%,
+          rgba(180, 150, 255, 0.04) 60%,
+          rgba(160, 120, 255, 0.10) 82%,
+          rgba(120, 80, 200, 0.22) 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.32);
+    }
+
+    .layer-specular-1 {
+      top: 6%;
+      left: 10%;
+      width: 42%;
+      height: 34%;
+      background: radial-gradient(ellipse at 38% 32%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.48) 22%, rgba(255, 255, 255, 0.14) 50%, transparent 70%);
+      transform: rotate(-22deg);
+      filter: blur(2.5px);
+      animation: specular-shimmer 7s ease-in-out infinite;
+    }
+
+    @keyframes specular-shimmer {
+
+      0%,
+      100% {
+        opacity: 0.95;
+      }
+
+      50% {
+        opacity: 1.00;
+        transform: rotate(-22deg) scale(1.03);
+      }
+    }
+
+    .layer-specular-2 {
+      top: 4%;
+      left: 28%;
+      width: 20%;
+      height: 15%;
+      background: radial-gradient(ellipse, rgba(255, 255, 255, 1.00) 0%, rgba(255, 255, 255, 0.65) 35%, transparent 65%);
+      filter: blur(0.8px);
+    }
+
+    .layer-refraction {
+      bottom: 18%;
+      right: 12%;
+      width: 54%;
+      height: 46%;
+      background: radial-gradient(ellipse at 32% 42%, rgba(196, 181, 253, 0.20) 0%, rgba(167, 139, 250, 0.14) 30%, rgba(220, 200, 255, 0.08) 55%, transparent 70%);
+      filter: blur(10px);
+    }
+
+    .layer-rim {
+      box-shadow:
+        inset 0 0 50px rgba(124, 58, 237, 0.12),
+        inset 3px 3px 12px rgba(255, 255, 255, 0.22),
+        inset -6px -6px 20px rgba(76, 29, 149, 0.18),
+        0 10px 40px rgba(76, 29, 149, 0.40),
+        0 0 100px rgba(124, 58, 237, 0.18);
+    }
+
+    .layer-bottom-rim {
+      bottom: 3%;
+      left: 22%;
+      right: 22%;
+      height: 10%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28) 50%, transparent);
+      filter: blur(2px);
+    }
+
+    /* TOP-RIGHT FLOATING STAT */
+    .stat-top-right {
+      position: absolute;
+      top: 84px;
+      right: var(--page-pad);
+      text-align: right;
+      z-index: 10;
+      animation: fade-up 0.8s ease 0.9s both;
+    }
+
+    .stat-number {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .stat-number sup {
+      font-size: 18px;
+      font-weight: 600;
+      vertical-align: super;
+      margin-left: 1px;
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--text-tertiary);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* BOTTOM STATISTICS BAR */
+    .bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.065);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--page-pad);
+      z-index: 15;
+      animation: slide-up 0.8s ease 1.0s both;
+    }
+
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .bar-left,
+    .bar-stats {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .bar-info-item,
+    .bar-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .bar-info-label,
+    .bar-stat-label {
+      font-size: 9px;
+      font-weight: 400;
+      color: var(--text-tertiary);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .bar-info-value {
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .bar-divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.14);
+      flex-shrink: 0;
+    }
+
+    .bar-cards {
+      display: flex;
+      gap: 8px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .bar-card {
+      width: 72px;
+      height: 44px;
+      background: var(--glass-surface);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius-card-sm);
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: transform var(--transition), border-color var(--transition);
+      cursor: pointer;
+    }
+
+    .bar-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .bar-card-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+    }
+
+    .bar-stat {
+      text-align: right;
+    }
+
+    .bar-stat-number {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .bar-stat-number sup {
+      font-size: 14px;
+      vertical-align: super;
+      margin-left: 1px;
+      font-weight: 600;
+    }
+
+    .bar-stat-denom {
+      font-size: 16px;
+      font-weight: 500;
+      opacity: 0.65;
+    }
+
+    .center-dot {
+      position: absolute;
+      left: 50%;
+      top: calc(42px + 390px + 20px);
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dot-inner {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.50);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.30);
+      animation: dot-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes dot-pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.5;
+      }
+
+      50% {
+        transform: scale(1.4);
+        opacity: 0.9;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .sphere-wrap,
+      .sphere-halo,
+      .fabric-layer,
+      .layer-specular-1,
+      .particle,
+      .hero-title,
+      .hero-body,
+      .hero-cta,
+      .stat-top-right,
+      .bottom-bar,
+      .dot-inner {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-base"></div>
+
+  <svg class="fabric-layer" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gradFabric1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="rgba(167,139,250, 0.50)" />
+        <stop offset="50%" stop-color="rgba(124,58,237, 0.30)" />
+        <stop offset="100%" stop-color="rgba(76,29,149, 0.10)" />
+      </linearGradient>
+      <linearGradient id="gradFabric2" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="rgba(196,181,253, 0.40)" />
+        <stop offset="100%" stop-color="rgba(232,121,249, 0.35)" />
+      </linearGradient>
+      <linearGradient id="gradFabric3" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="rgba(237,233,254, 0.55)" />
+        <stop offset="100%" stop-color="rgba(167,139,250, 0.20)" />
+      </linearGradient>
+      <linearGradient id="gradFabric4" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="rgba(30,10,74, 0.70)" />
+        <stop offset="100%" stop-color="rgba(45,27,105, 0.40)" />
+      </linearGradient>
+      <linearGradient id="gradFabric5" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="rgba(240,171,252, 0.30)" />
+        <stop offset="100%" stop-color="rgba(250,232,255, 0.20)" />
+      </linearGradient>
+    </defs>
+
+    <!-- PATH 1: Main fabric body -->
+    <path d="M -50 720 C 100 500, 300 400, 500 250 C 650 130, 750 80, 900 -20 L 1280 -20 L 1280 720 Z"
+      fill="url(#gradFabric4)" opacity="0.8" />
+
+    <!-- PATH 2: Large mid-purple sweep -->
+    <path
+      d="M -50 600 C 150 450, 350 350, 550 200 C 700 90, 820 50, 1000 -20 L 1280 100 C 1100 200, 900 300, 700 420 C 500 540, 300 620, 100 700 Z"
+      fill="url(#gradFabric1)" opacity="0.9" />
+
+    <!-- PATH 3: Bright ridge highlight -->
+    <path
+      d="M 100 580 C 200 470, 320 380, 440 280 C 540 200, 620 140, 720 60 L 760 80 C 660 170, 580 240, 480 330 C 360 430, 240 530, 140 640 Z"
+      fill="url(#gradFabric3)" opacity="0.70" />
+
+    <!-- PATH 4: Secondary ridge -->
+    <path
+      d="M 200 640 C 290 540, 390 450, 510 350 C 610 265, 700 200, 810 110 L 840 130 C 730 225, 640 300, 540 395 C 420 500, 320 600, 230 700 Z"
+      fill="rgba(237,233,254, 0.40)" opacity="0.60" />
+
+    <!-- PATH 5: Rose/pink right-side fabric -->
+    <path
+      d="M 900 -20 C 1000 100, 1100 250, 1280 350 L 1280 720 L 900 720 C 950 600, 980 450, 950 300 C 930 180, 900 80, 900 -20 Z"
+      fill="url(#gradFabric5)" opacity="0.70" />
+
+    <!-- PATH 6: Top-left shadow fold -->
+    <path d="M -50 -20 L 400 -20 C 350 80, 280 160, 200 280 C 120 400, 50 500, -50 620 Z" fill="rgba(30,10,74, 0.50)"
+      opacity="0.80" />
+
+    <!-- PATH 7: Center-bottom shadow pool -->
+    <path d="M 300 720 C 350 600, 450 520, 580 460 C 680 415, 750 400, 850 420 L 900 720 Z" fill="rgba(45,27,105, 0.55)"
+      opacity="0.70" />
+
+    <!-- PATH 8: Top-right pale lavender highlight -->
+    <path d="M 800 -20 C 900 30, 1050 80, 1200 60 L 1280 -20 Z" fill="rgba(221,214,254, 0.25)" opacity="0.90" />
+  </svg>
+
+  <div class="vignette"></div>
+
+  <svg class="grain" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <filter id="grain-filter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.70" numOctaves="4" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain-filter)" opacity="0.038" />
+  </svg>
+
+  <div class="particle"
+    style="width:3px; height:3px; background:rgba(255,255,255,0.30); left:15%; top:70%; animation: particle-float 11s 0s linear infinite;">
+  </div>
+  <div class="particle"
+    style="width:2px; height:2px; background:rgba(221,214,254,0.45); left:30%; top:80%; animation: particle-float 9s 2s linear infinite;">
+  </div>
+  <div class="particle"
+    style="width:4px; height:4px; background:rgba(255,255,255,0.18); left:55%; top:65%; animation: particle-float 14s 4s linear infinite;">
+  </div>
+  <div class="particle"
+    style="width:2px; height:2px; background:rgba(240,171,252,0.40); left:72%; top:75%; animation: particle-float 10s 7s linear infinite;">
+  </div>
+  <div class="particle"
+    style="width:3px; height:3px; background:rgba(196,181,253,0.35); left:88%; top:60%; animation: particle-float 12s 1s linear infinite;">
+  </div>
+
+  <nav>
+    <div class="nav-logo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <line x1="10" y1="2" x2="10" y2="18" stroke="rgba(255,255,255,0.75)" stroke-width="1.5"
+          stroke-linecap="round" />
+        <line x1="2" y1="10" x2="18" y2="10" stroke="rgba(255,255,255,0.75)" stroke-width="1.5"
+          stroke-linecap="round" />
+        <line x1="4.1" y1="4.1" x2="15.9" y2="15.9" stroke="rgba(255,255,255,0.75)" stroke-width="1.5"
+          stroke-linecap="round" />
+        <line x1="15.9" y1="4.1" x2="4.1" y2="15.9" stroke="rgba(255,255,255,0.75)" stroke-width="1.5"
+          stroke-linecap="round" />
+      </svg>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="nav-pill">Therapy</a>
+      <a href="#" class="nav-pill">Teams</a>
+      <a href="#" class="nav-pill">About</a>
+    </div>
+    <button class="nav-cta">Book a session</button>
+  </nav>
+
+  <section class="hero-content">
+    <h1 class="hero-title">
+      <span class="line-1">Mental</span>
+      <span class="line-2">Harmony</span>
+    </h1>
+    <p class="hero-body">
+      Discover inner peace and lasting mental wellness through
+      evidence-based therapy and mindfulness practices tailored to you.
+    </p>
+    <button class="hero-cta">
+      Discover more
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="margin-left:6px">
+        <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+          stroke-linejoin="round" />
+      </svg>
+    </button>
+  </section>
+
+  <div class="sphere-wrap">
+    <div class="sphere-halo"></div>
+    <div class="sphere">
+      <div class="sphere-layer layer-body"></div>
+      <div class="sphere-layer layer-specular-1"></div>
+      <div class="sphere-layer layer-specular-2"></div>
+      <div class="sphere-layer layer-refraction"></div>
+      <div class="sphere-layer layer-rim"></div>
+      <div class="sphere-layer layer-bottom-rim"></div>
+    </div>
+  </div>
+
+  <div class="stat-top-right">
+    <span class="stat-number">300 <sup>+</sup></span>
+    <span class="stat-label">Satisfied clients</span>
+  </div>
+
+  <div class="center-dot">
+    <div class="dot-inner"></div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="bar-left">
+      <div class="bar-info-item">
+        <span class="bar-info-label">Response time</span>
+        <span class="bar-info-value">Under 24h</span>
+      </div>
+      <div class="bar-divider"></div>
+      <div class="bar-info-item">
+        <span class="bar-info-label">Specialists</span>
+        <span class="bar-info-value">Licensed & verified</span>
+      </div>
+    </div>
+
+    <div class="bar-cards">
+      <div class="bar-card">
+        <div class="bar-card-inner"
+          style="background:linear-gradient(135deg,rgba(167,139,250,0.35),rgba(196,181,253,0.15))"></div>
+      </div>
+      <div class="bar-card">
+        <div class="bar-card-inner"
+          style="background:linear-gradient(135deg,rgba(232,121,249,0.30),rgba(240,171,252,0.12))"></div>
+      </div>
+      <div class="bar-card">
+        <div class="bar-card-inner"
+          style="background:linear-gradient(135deg,rgba(124,58,237,0.35),rgba(167,139,250,0.18))"></div>
+      </div>
+    </div>
+
+    <div class="bar-stats">
+      <div class="bar-stat">
+        <span class="bar-stat-number">10 000 <sup>+</sup></span>
+        <span class="bar-stat-label">Clients helped</span>
+      </div>
+      <div class="bar-divider"></div>
+      <div class="bar-stat">
+        <span class="bar-stat-number">9,6<span class="bar-stat-denom">/10</span></span>
+        <span class="bar-stat-label">Average rating</span>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
